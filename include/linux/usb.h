@@ -311,6 +311,17 @@ int __usb_get_extra_descriptor(char *buffer, unsigned size,
 				type, (void **)ptr)
 
 /* ----------------------------------------------------------------------- */
+extern int usb_parse_configuration(struct usb_device *dev, int cfgidx,
+    struct usb_host_config *config, unsigned char *buffer, int size);
+extern void usb_enable_endpoint(struct usb_device *dev,
+				struct usb_host_endpoint *ep, bool reset_ep);
+extern void usb_disable_endpoint(struct usb_device *dev, unsigned int epaddr,
+				bool reset_hardware);
+extern int usb_hcd_alloc_bandwidth(struct usb_device *udev,
+		struct usb_host_config *new_config,
+		struct usb_host_interface *cur_alt,	
+		struct usb_host_interface *new_alt);
+
 
 /* USB device number allocation bitmap */
 struct usb_devmap {

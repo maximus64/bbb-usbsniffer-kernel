@@ -32,6 +32,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#define DEBUG
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -1844,7 +1845,8 @@ static int musb_gadget_start(struct usb_gadget *g,
 	unsigned long		flags;
 	int			retval = 0;
 
-	if (driver->max_speed < USB_SPEED_HIGH) {
+	if (driver->max_speed != USB_SPEED_HIGH &&
+	    driver->max_speed != USB_SPEED_FULL) {
 		retval = -EINVAL;
 		goto err;
 	}
@@ -1863,7 +1865,7 @@ static int musb_gadget_start(struct usb_gadget *g,
 	musb->xceiv->state = OTG_STATE_B_IDLE;
 	spin_unlock_irqrestore(&musb->lock, flags);
 
-	musb_start(musb);
+	musb_start(musb, driver->max_speed);
 
 	/* REVISIT:  funcall to other code, which also
 	 * handles power budgeting ... this way also
