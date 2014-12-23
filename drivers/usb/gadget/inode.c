@@ -676,7 +676,9 @@ fail:
 			req->length = len;
 			req->complete = ep_aio_complete;
 			req->context = iocb;
+			spin_unlock_irq(&epdata->dev->lock);
 			value = usb_ep_queue(epdata->ep, req, GFP_ATOMIC);
+			spin_lock_irq(&epdata->dev->lock);
 			if (unlikely(0 != value))
 				usb_ep_free_request(epdata->ep, req);
 		} else
@@ -1009,9 +1011,12 @@ ep0_read (struct file *fd, char __user *buf, size_t len, loff_t *ptr)
 			struct usb_ep		*ep = dev->gadget->ep0;
 			struct usb_request	*req = dev->req;
 
-			if ((retval = setup_req (ep, req, 0)) == 0)
+			if ((retval = setup_req (ep, req, 0)) == 0) {
+				spin_unlock_irq (&dev->lock);
 				retval = usb_ep_queue (ep, req, GFP_ATOMIC);
-			dev->state = STATE_DEV_CONNECTED;
+				spin_lock_irq (&dev->lock);
+			}
+ 			dev->state = STATE_DEV_CONNECTED;
 
 			/* assume that was SET_CONFIGURATION */
 			if (dev->current_config) {
