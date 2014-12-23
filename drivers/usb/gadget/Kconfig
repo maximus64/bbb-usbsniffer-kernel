@@ -1185,7 +1185,6 @@ config USB_G_WEBCAM
 
 config USB_G_PROXY
 	tristate "Proxy Gadget (EXPERIMENTAL)"
-	default n
 	help
 	  This option enables a proxy gadget, that forwards transfers to
 	  a USB device.
